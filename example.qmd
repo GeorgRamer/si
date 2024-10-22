@@ -1,0 +1,34 @@
+---
+title: "Quarto Shortcode for SI Values"
+---
+
+# Summary 
+
+This extension creates a shortcode `si` for setting SI values and units. The structure of the shortcode is as follows 
+
+```{shortcodes=false}
+{{< si 1.45 m s-1 >}}
+```
+
+which renders as 
+
+{{< si 1.45 m s-1 >}}
+
+Numbers with an order of magnitude can be rendered by adding `e` or `E` 
+```{shortcodes=false}
+{{< si 1.45E2 m s-1 >}}
+```
+which renders as {{< si 1.45E2 m s-1 >}}.
+
+SI prefixes and exponents of units are recognized. And `.` is rendered as centered dot. 
+```{shortcodes=false}
+{{< si 1.45 kg . m2 s-3 >}}
+```
+{{< si 1.45 kg . m2 s-3 >}}
+
+Furthermore, some units that use non-ASCII symbols can instead be typed by ASCII characters
+```{shortcodes=false}
+{{< si 1.45 ohm ang um-3>}}
+```
+{{< si 1.45 ohm ang um-3>}}
+
