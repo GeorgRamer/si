@@ -31,7 +31,7 @@ return {
 			end
 		elseif arg == "." then 
 			
-			table.insert(outtab, "\u{2219}" )
+			table.insert(outtab, "\u{00B7}" )
 		else
     	-- check for exponent and remove
     	
