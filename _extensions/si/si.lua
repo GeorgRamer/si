@@ -18,7 +18,6 @@ return {
   ['si'] = function(args, kwargs, meta) 
     outtab = {}
     for idx, arg in ipairs(args) do
-		print(arg)
     	if idx == 1 then
 			exponent_start = string.find(arg, "[eE][-]?%d+")
 			if exponent_start then
@@ -27,7 +26,7 @@ return {
 			end 
     		outtab = {arg}
 			if exponent_start ~= nil then
-				table.insert(outtab, space.."\u{2715}"..space .."10")
+				table.insert(outtab, space.."\u{00D7}"..space .."10")
 				table.insert(outtab, pandoc.Superscript(exponent))
 			end
 		elseif arg == "." then 
@@ -51,8 +50,6 @@ return {
     			arg = string.sub(arg,2)
     		end
     	end 
-		print(prefix)
-		print(arg)
 		if si_units[arg] ~= nil then 
 			arg = si_units[arg]
 		end
@@ -65,7 +62,6 @@ return {
     	end
 
     end
-	print(pandoc.Inlines(table.unpack(outtab)))
     return outtab
   end
 }
