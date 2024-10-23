@@ -46,3 +46,9 @@ More correct is to enclose the value in `()` when specifying uncertainties
 {{< si (1.45+-0.01) ohm ang um-3 >}}
 ```
 {{< si (1.45+-0.01) ohm ang um-3 >}}
+
+Sometimes subscripts are added to units such as when specifying whether an amplitude is peak-to-peak or RMS
+```{shortcodes=false}
+{{< si (1.45+-0.01) V_pp >}}
+```
+{{< si (1.45+-0.01) V_pp >}}

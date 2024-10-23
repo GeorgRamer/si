@@ -28,7 +28,7 @@ function identify_block(arg)
 		return "NUMERIC"
 	end
 
-	if string.match(arg, "^[a-zA-Z]+[-0-9]-$") then
+	if string.match(arg, "^[a-zA-Z_]+[-0-9]-$") then
 
 		return "UNIT"
 	end
@@ -88,10 +88,11 @@ function parse_unit(arg)
 	end
 	-- there may be a subscript in the unit, check and remove
 	subscript_start = string.find(arg, "_[a-zA-Z%d]+")
-	subsript = nil
+	print(arg, subscript_start)
+	subscript = nil
 	if subscript_start then
-		exponesubsriptnt = pandoc.Superscript(string.sub(arg, subscript_start[1]+1, subscript_start[2]))
-		arg = string.sub(arg, 0, exponent_start[1]-1)
+		subscript = pandoc.Superscript(string.sub(arg, subscript_start+1))
+		arg = string.sub(arg, 0, subscript_start-1)
 	end
 
 	-- if the remaining part is longer than one character, the first character may be a prefix
@@ -115,7 +116,7 @@ function parse_unit(arg)
 	table.insert(outtab, prefix)
 	end
 	table.insert(outtab, arg)
-	if subsript then
+	if subscript then
 		table.insert(outtab, pandoc.Subscript(subscript))
 	end
 	if exponent then
