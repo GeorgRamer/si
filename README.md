@@ -4,10 +4,9 @@ _TODO_: Add a short description of your extension.
 
 ## Installing
 
-_TODO_: Replace the `<github-organization>` with your GitHub organization.
 
 ```bash
-quarto add <github-organization>/si
+quarto add GeorgRamer/si
 ```
 
 This will install the extension under the `_extensions` subdirectory.
@@ -15,7 +14,13 @@ If you're using version control, you will want to check in this directory.
 
 ## Using
 
-_TODO_: Describe how to use your extension.
+
+This extension creates a shortcode `si` for setting SI values and units. The structure of the shortcode is as follows 
+
+```{shortcodes=false}
+{{< si 1.45 m s-1 >}}
+```
+
 
 ## Example
 
