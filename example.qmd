@@ -32,3 +32,17 @@ Furthermore, some units that use non-ASCII symbols can instead be typed by ASCII
 ```
 {{< si 1.45 ohm ang um-3>}}
 
+
+
+Uncertainties can be speficied using `+-`
+```{shortcodes=false}
+{{< si 1.45+-0.01 ohm ang um-3 >}}
+```
+{{< si 1.45+-0.01 ohm ang um-3 >}}
+
+
+More correct is to enclose the value in `()` when specifying uncertainties
+```{shortcodes=false}
+{{< si (1.45+-0.01) ohm ang um-3 >}}
+```
+{{< si (1.45+-0.01) ohm ang um-3 >}}

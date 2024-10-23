@@ -2,66 +2,150 @@ si_prefix = {Q = "Q", R = "R", Y = "Y", Z="Z", E = "E", P="P", T="T", G="G", M="
 
 si_units = {m="m", l="l", L="L", g="g", V="V", A="A", ohm="\u{03A9}", ang="\u{212B}"}
 
-space = "\u{202F}"
+SPACE = "\u{202F}"
+TIMES = "\u{00D7}"
+DOT = "\u{00B7}"
 
-function merge(a, b)
-    if type(a) == 'table' and type(b) == 'table' then
-        for k,v in pairs(b) do if type(v)=='table' and type(a[k] or false)=='table' then merge(a[k],v) else a[k]=v end end
+
+local function concatenateTables(t1, t2)
+    for i = 1, #t2 do
+        t1[#t1 + 1] = t2[i]
     end
-    return a
+    return t1
 end
 
+function identify_block(arg)
+	if arg == "." then
+		return "DOT"
+	end
+	if arg == "x" then
+		return "TIMES"
+	end 
 
+	num_start = string.match(arg, "^[%d.,Eeij()+-]+$")
+
+	if num_start then
+		return "NUMERIC"
+	end
+
+	if string.match(arg, "^[a-zA-Z]+[-0-9]-$") then
+
+		return "UNIT"
+	end
+
+	return nil
+end 
+
+
+parsers = {}
+
+
+
+function parse_numeric(arg)
+	arg = string.gsub(arg, "%+%-", "\u{00B1}")
+	-- add exponents
+	outtab = {}
+	while string.find(arg, "[eE][+-]?%d+") do
+		idx_start, idx_stop = string.find(arg, "[eE][+-]?%d+")
+		before_substr = string.sub(arg, 1, idx_start-1)..TIMES.."10"
+		table.insert(outtab, before_substr)
+		table.insert(outtab, pandoc.Superscript(string.sub(arg,idx_start+1,idx_stop)))
+		arg = string.sub(arg, idx_stop+1)
+	end
+	if string.len(arg)>0 then
+		table.insert(outtab, arg)
+	end
+	return outtab
+end
+
+parsers["NUMERIC"] = parse_numeric
+
+function parse_dot(arg)
+
+	return {DOT}
+
+end
+
+parsers["DOT"] = parse_dot
+
+
+function parse_times(arg)
+	return {TIMES}
+end
+
+parsers["TIMES"] = parse_times
+
+
+function parse_unit(arg)
+
+	-- check for exponent and remove
+			
+	exponent_start = string.find(arg, "%-?%d+$")
+	exponent = nil
+	if exponent_start then
+		exponent = pandoc.Superscript(string.sub(arg, exponent_start))
+		arg = string.sub(arg, 0, exponent_start-1)
+	end
+	-- there may be a subscript in the unit, check and remove
+	subscript_start = string.find(arg, "_[a-zA-Z%d]+")
+	subsript = nil
+	if subscript_start then
+		exponesubsriptnt = pandoc.Superscript(string.sub(arg, subscript_start[1]+1, subscript_start[2]))
+		arg = string.sub(arg, 0, exponent_start[1]-1)
+	end
+
+	-- if the remaining part is longer than one character, the first character may be a prefix
+	prefix=nil
+	if string.len(arg)>1 then
+
+		if si_prefix[string.sub(arg,0,1)] ~=nil and si_units[arg] == nil then
+			prefix = si_prefix[string.sub(arg,0,1) ]
+			arg = string.sub(arg,2)
+		end
+	end 
+	-- check whether the remaining part is a shortcut unit and replace 
+	if si_units[arg] ~= nil then 
+		arg = si_units[arg]
+	end
+
+	-- assemble
+	outtab = {}
+
+	if prefix then
+	table.insert(outtab, prefix)
+	end
+	table.insert(outtab, arg)
+	if subsript then
+		table.insert(outtab, pandoc.Subscript(subscript))
+	end
+	if exponent then
+		table.insert(outtab, pandoc.Superscript(exponent))
+
+	end
+	return outtab
+end
+
+parsers["UNIT"] = parse_unit
 
 
 return {
   ['si'] = function(args, kwargs, meta) 
     outtab = {}
     for idx, arg in ipairs(args) do
-    	if idx == 1 then
-			exponent_start = string.find(arg, "[eE][-]?%d+")
-			if exponent_start then
-				exponent = string.sub(arg, exponent_start+1)
-				arg = string.sub(arg,0, exponent_start-1)
-			end 
-    		outtab = {arg}
-			if exponent_start ~= nil then
-				table.insert(outtab, space.."\u{00D7}"..space .."10")
-				table.insert(outtab, pandoc.Superscript(exponent))
-			end
-		elseif arg == "." then 
-			
-			table.insert(outtab, "\u{00B7}" )
-		else
-    	-- check for exponent and remove
-    	
-    		exponent_start = string.find(arg, "[-]?%d+$")
-    		exponent = nil
-    		if exponent_start then
-    			exponent = pandoc.Superscript(string.sub(arg, exponent_start))
-    			arg = string.sub(arg, 0, exponent_start-1)
-    		end
-    	-- if the remaining part is longer than one character, the first character may be a prefix
-    	prefix=nil
-    	if string.len(arg)>1 then
+    	block_type = identify_block(arg)
 
-    		if si_prefix[string.sub(arg,0,1)] ~=nil and si_units[arg] == nil then
-    			prefix = si_prefix[string.sub(arg,0,1) ]
-    			arg = string.sub(arg,2)
-    		end
-    	end 
-		if si_units[arg] ~= nil then 
-			arg = si_units[arg]
+		if idx>1 then
+			table.insert(outtab, SPACE)
 		end
-		
+		if block_type then
+			
+			outtab=concatenateTables(outtab, parsers[block_type](arg))
+		else
+			table.insert(outtab, arg)
+		end
 
-    	table.insert(outtab, space )
-    	table.insert(outtab, prefix )
-		table.insert(outtab, arg )
-		table.insert(outtab, exponent )
-    	end
+	end
 
-    end
     return outtab
   end
 }
