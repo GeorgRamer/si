@@ -79,19 +79,20 @@ parsers["TIMES"] = parse_times
 function parse_unit(arg)
 
 	-- check for exponent and remove
-			
+
 	exponent_start = string.find(arg, "%-?%d+$")
 	exponent = nil
 	if exponent_start then
 		exponent = pandoc.Superscript(string.sub(arg, exponent_start))
 		arg = string.sub(arg, 0, exponent_start-1)
 	end
+
 	-- there may be a subscript in the unit, check and remove
 	subscript_start = string.find(arg, "_[a-zA-Z%d]+")
-	print(arg, subscript_start)
+
 	subscript = nil
 	if subscript_start then
-		subscript = pandoc.Superscript(string.sub(arg, subscript_start+1))
+		subscript = pandoc.Subscript(string.sub(arg, subscript_start+1))
 		arg = string.sub(arg, 0, subscript_start-1)
 	end
 
@@ -117,10 +118,10 @@ function parse_unit(arg)
 	end
 	table.insert(outtab, arg)
 	if subscript then
-		table.insert(outtab, pandoc.Subscript(subscript))
+		table.insert(outtab, subscript)
 	end
 	if exponent then
-		table.insert(outtab, pandoc.Superscript(exponent))
+		table.insert(outtab, exponent)
 
 	end
 	return outtab
