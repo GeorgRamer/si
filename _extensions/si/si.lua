@@ -18,17 +18,24 @@ function identify_block(arg)
 	if arg == "." then
 		return "DOT"
 	end
+
 	if arg == "x" then
 		return "TIMES"
 	end 
 
-	num_start = string.match(arg, "^[%d.,Eeij()+-]+$")
+
+	if arg == "/" then
+		return "SLASH"
+	end 
+
+
+	num_start = string.match(arg, "^[%d.,Eeij()+-°]+$")
 
 	if num_start then
 		return "NUMERIC"
 	end
 
-	if string.match(arg, "^[a-zA-Z_]+[-0-9]-$") then
+	if string.match(arg, "^[a-zA-Z_°]+[-0-9]-$") then
 
 		return "UNIT"
 	end
@@ -65,8 +72,16 @@ function parse_dot(arg)
 	return {DOT}
 
 end
-
 parsers["DOT"] = parse_dot
+
+function parse_slash(arg)
+
+	return {"/"}
+
+end
+
+
+parsers["SLASH"] = parse_slash
 
 
 function parse_times(arg)

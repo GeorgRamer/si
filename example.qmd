@@ -20,11 +20,11 @@ Numbers with an order of magnitude can be rendered by adding `e` or `E`
 ```
 which renders as {{< si 1.45E2 m s-1 >}}.
 
-SI prefixes and exponents of units are recognized. And `.` is rendered as centered dot. 
+SI prefixes and exponents of units are recognized.  `.` is rendered as centered dot, slashes `/` are rendered as slashes. 
 ```{shortcodes=false}
-{{< si 1.45 kg . m2 s-3 >}}
+{{< si 1.45 kg . m2 s-3 / cm >}}
 ```
-{{< si 1.45 kg . m2 s-3 >}}
+{{< si 1.45 kg . m2 s-3 / cm >}}
 
 Furthermore, some units that use non-ASCII symbols can instead be typed by ASCII characters
 ```{shortcodes=false}
@@ -52,3 +52,19 @@ Sometimes subscripts are added to units such as when specifying whether an ampli
 {{< si (1.45+-0.01) V_pp >}}
 ```
 {{< si (1.45+-0.01) V_pp >}}
+
+
+The shortcode does not take care of the difference between degree (in terms of angles) and degree Celsius, but it allows typesetting them correctly.
+
+```{shortcodes=false}
+{{< si 15.2° >}}
+```
+{{< si 15.2° >}}
+
+
+```{shortcodes=false}
+{{< si 15.2 °C >}}
+```
+{{< si 15.2 °C >}}
+
+
