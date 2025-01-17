@@ -28,17 +28,18 @@ function identify_block(arg)
 		return "SLASH"
 	end 
 
+	if string.match(arg, "^[a-zA-Z_°]+[-0-9]-$") then
 
+		return "UNIT"
+	end
+	
 	num_start = string.match(arg, "^[%d.,Eeij()+-°]+$")
 
 	if num_start then
 		return "NUMERIC"
 	end
 
-	if string.match(arg, "^[a-zA-Z_°]+[-0-9]-$") then
-
-		return "UNIT"
-	end
+	
 
 	return nil
 end 
